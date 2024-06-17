@@ -1,0 +1,48 @@
+services:
+  {{ postgresql_container_name }}:
+    image: {{ postgresql_docker_image }}
+    container_name: {{ postgresql_container_name }}
+    networks:
+      - {{ postgresql_docker_network }}
+    expose:
+      - {{ postgresql_expose_port }}
+    ports:
+      - {{ postgresql_expose_port }}:{{ postgresql_expose_port }}
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "{{ postgresql_docker_cpu }}"
+          memory: "{{ postgresql_docker_memory }}"
+    environment:
+      POSTGRES_DB: "{{ postgresql_db_name }}"
+      POSTGRES_USER: "{{ postgresql_db_user }}"
+      POSTGRES_PASSWORD: "{{ postgresql_db_password }}"
+    command: >
+      postgres
+      -c 'autovacuum_work_mem={{ postgresql_autovacuum_work_mem }}'
+      -c 'log_line_prefix={{ postgresql_log_line_prefix }}'
+      -c 'log_min_error_statement={{ postgresql_log_min_error_statement }}'
+      -c 'log_statement={{ postgresql_log_statement }}'
+      -c 'maintenance_work_mem={{ postgresql_maintenance_work_mem }}'
+      -c 'shared_buffers={{ postgresql_shared_buffers }}'
+      -c 'work_mem={{ postgresql_work_mem }}'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - pgbackup:/var/lib/postgresql/backup
+      - initdb-scripts:/docker-entrypoint-initdb.d
+    logging:
+      driver: "journald"
+
+volumes:
+  pgdata:
+    external: true
+  pgbackup:
+    external: true
+  initdb-scripts:
+    external: true
+
+networks:
+  {{ postgresql_docker_network }}:
+      external: true

@@ -1,0 +1,20 @@
+---
+postgresql_base_dir: "/opt/postgresql"
+# Docker container setting
+postgresql_container_name: "postgres"
+postgresql_docker_cpu: 2
+postgresql_docker_image: "postgres:12"
+postgresql_docker_memory: "4GB"
+postgresql_docker_network: "traefik"
+postgresql_expose_port: 5432
+# db options
+postgresql_db_name: "postgresdb"
+postgresql_db_user: "postgresuser"
+postgresql_db_password: "myPassword"
+postgresql_autovacuum_work_mem: "128MB"
+postgresql_log_line_prefix: "%m [%p] %q%u@%d(%h) "
+postgresql_log_min_error_statement: "warning"
+postgresql_log_statement: "ddl"
+postgresql_maintenance_work_mem: "256MB"
+postgresql_shared_buffers: "512MB"
+postgresql_work_mem: "8MB"

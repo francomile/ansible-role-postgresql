@@ -1,0 +1,37 @@
+---
+- name: "Postgresql | Create the wm Docker network"
+  community.docker.docker_network:
+    name: "{{ postgresql_docker_network }}"
+
+- name: "Postgresql | Create the postgresql Docker volumes"
+  community.docker.docker_volume:
+    name: "{{ pg_volume }}"
+    state: present
+  loop:
+    - pgdata
+    - pgbackup
+    - initdb-scripts
+  loop_control:
+    loop_var: pg_volume
+
+- name: "Postgresql | Create psql volume folder"
+  ansible.builtin.file:
+    path: "{{ postgresql_base_dir }}"
+    state: directory
+    owner: 999
+    group: 999
+    mode: "0750"
+
+- name: "Postgresql | Set docker-compose template for running postgresql"
+  ansible.builtin.template:
+    src: "docker-compose.yaml.j2"
+    dest: "{{ postgresql_base_dir }}/docker-compose.yaml"
+    owner: root
+    group: root
+    mode: "0640"
+  notify: "Restart postgresql"
+
+- name: "Postgresql | Start postgresql"
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ postgresql_base_dir }}/docker-compose.yaml up -d --remove-orphans"
+  timeout: 300

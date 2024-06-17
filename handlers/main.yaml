@@ -1,0 +1,10 @@
+---
+- name: "Start postgresql"
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ postgresql_base_dir }}/docker-compose.yaml up -d"
+  timeout: 300
+
+- name: "Restart postgresql"
+  ansible.builtin.command:
+    cmd: "docker compose -f {{ postgresql_base_dir }}/docker-compose.yaml restart"
+  timeout: 300
